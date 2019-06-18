@@ -39,6 +39,7 @@ export default class StatusBar extends Component {
     });
 
     componentWillMount(){
+        alert(this.state.expoToken);
         AsyncStorage.getItem("customerToken").then((token)=>{
             if(token) {
              this.setState({

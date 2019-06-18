@@ -29,7 +29,8 @@ class ServiceBook extends React.Component {
 			},
 			merchantList:[],
 			loader: false,
-			customerToken:''
+			customerToken:'',
+			expoToken : this.props.MerchantInfo.MerchantInformation[5]
 	  	}
 	}
 
@@ -57,8 +58,7 @@ class ServiceBook extends React.Component {
 
 		axios.post('http://dev.driveza.space/v1/users/create-booking',bookingData).then(res => {
 			alert(JSON.stringify(res));
-			// this.callFunction("0[UmxFXKFMVzXrOsKqlg8_4v]");
-			this.callFunction("0[nbbXymBor7CrAOjkh6E-5s]");
+			this.callFunction(this.props.MerchantInfo.MerchantInformation[5]);
 			this.setModalVisible(false);
 			this.props.navigation.navigate("NewStatusBarScreen",{
 				bookingId: res.data.id,
@@ -77,8 +77,8 @@ class ServiceBook extends React.Component {
 		data : {
 			"newBooking": true
 		}
-		}  
-		sendPushNotification(notificationObject.token, notificationObject.title, notificationObject.body, notificationObject.data);
+		}
+		sendPushNotification(notificationObject);
 	}
 	componentWillReceiveProps(){
 		this.setState({
@@ -177,7 +177,7 @@ class ServiceBook extends React.Component {
 	}
 	
 	merchantSelect=(data)=>{
-		let merchantInfoArray=[data.name,data.address,data.id,data.partnerId,data.isPickupAvailable,data.customerToken];
+		let merchantInfoArray=[data.name,data.address,data.id,data.partnerId,data.isPickupAvailable,data.pushToken];
 		this.props.merchantInfoAction(merchantInfoArray)
 		if(!this.props.LoginCheck.flagValue){
 			alert("Please login first")
@@ -251,11 +251,11 @@ class ServiceBook extends React.Component {
 				  				<Icon
 									Icon size={15} 
 									name="calendar"  
-									color="#0000000"
+									color="#000000"
 				   				/>
 					<View style={{paddingLeft:10}}><Text style={{fontSize:15,color:"green"}}>SCHEDULED DATE</Text></View>        
 							</View>
-							<View style={{padding:10,paddingLeft:26}}><Text style={{fontSize:15,color:"000000"}}> {this.dateDisplay()}</Text></View>        
+							<View style={{padding:10,paddingLeft:26}}><Text style={{fontSize:15,color:"#000000"}}> {this.dateDisplay()}</Text></View>        
 
 			      
 						</View>
@@ -281,7 +281,6 @@ class ServiceBook extends React.Component {
 				  				<Icon
 									Icon size={15} 
 									name="car"  
-									
 									color="#000000"
 				   				/>
 					<View style={{paddingLeft:10}}><Text style={{fontSize:15,color:"green"}}>VEHICLE CHOSEN</Text></View>        
@@ -455,12 +454,12 @@ class ServiceBook extends React.Component {
 							</ScrollView>
 			  			</Modal>
 						 {
-							!this.state.loader? ( <View style={{marginTop:200}}><ActivityIndicator color="#015b63" /></View>):
+							!this.state.loader? ( <View style={{marginTop:200}}><ActivityIndicator/></View>):
 							<React.Fragment>
 								{
 							 this.state.merchantList.length==0?(<View style={{marginTop:200,alignItems:"center"}}><Text>No merchants found</Text></View>):this.state.merchantList.map((data,index)=>{
 								  return(  		  
-					<TouchableOpacity onPress={() => this.merchantSelect(data)}>
+					<TouchableOpacity onPress={() => this.merchantSelect(data)} key={index}>
 			  			<View style={{backgroundColor:"#efefef",width:"100%",paddingLeft:20,paddingTop:20,paddingRight:20,paddingBottom:20}}>
 							<View style={{backgroundColor:"#ffffff",borderRadius:8}}>
 							<View style={{flexDirection: "row",marginTop:10}}>
