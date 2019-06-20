@@ -119,7 +119,7 @@ const DrawerNavigator = createDrawerNavigator({
   Login : {
     screen : AuthNavigator,
     navigationOptions: () => ({
-      drawerLabel: ' Login / SingUp   ',  
+      drawerLabel: ' Login / SignUp   ',  
       drawerIcon : ({tintColor}) => (
         <Icon name="user-circle" size={22} color="#000000" />
       )
