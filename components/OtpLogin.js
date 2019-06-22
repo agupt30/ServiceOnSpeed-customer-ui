@@ -20,8 +20,15 @@ class OtpLogin extends React.Component {
             otp:'',
             phone: props.navigation.state.params.phone,
             customerToken:'',
-            customerExpoToken : null
+            customerExpoToken : null,
+            time: '02:00',  // add initial timer value
+            showTimer: true
         };
+        this.otpTimer
+    }
+
+    componentDidMount(){
+        this.startTimer();
     }
 
     otpSubmit=() => {
@@ -88,6 +95,29 @@ class OtpLogin extends React.Component {
         })
       }
 
+    startTimer = () => {
+        let timer = 60*2, minutes, seconds; // 2 in minutes
+        this.otpTimer = setInterval( () => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+    
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            let time = minutes + ":" + seconds;
+    
+            this.setState({time});
+    
+            if (--timer < 0) {
+                this.setState({
+                    showTimer: false
+                },() => {
+                    clearInterval(this.otpTimer);
+                })
+            }
+        }, 1000);
+    }
+
       // To Generate the Data for the Customer Expo Push Tokken
       updateExpoPushToken = () => {
         const tokens = {
@@ -100,6 +130,22 @@ class OtpLogin extends React.Component {
             alert("Something Went Wrong");
         })
 
+      }
+
+      resendOtp = () => {
+        axios.post('https://dev.driveza.space/v1/users/otp',{phone:this.props.navigation.state.params.phone})
+        .then((res) => {
+            alert(res.data.otp);
+            this.setState({
+                time: "02:00",
+                showTimer: true
+            },() => {
+                this.startTimer();
+            })
+            // this.props.navigation.navigate('OtpLoginScreen',{phone:this.state.phoneNumber});
+        }).catch(error => {
+            alert("Something Went Wrong");
+        })
       }
 
     render(){
@@ -115,6 +161,24 @@ class OtpLogin extends React.Component {
                         onChangeText={(otp) => this.setState({otp})}
                         underlineColorAndroid="transparent"
                     />
+                </View>
+                <View>
+                    {
+                        this.state.showTimer ?(
+                                <View style={{paddingBottom: 15,paddingTop: 15,flex: 1, justifyContent:'center', alignItems:'center'}}>
+                                    <Text>
+                                        {this.state.time}
+                                    </Text>
+                                </View>
+                            ) :
+                            (
+                                <TouchableOpacity style={{paddingBottom: 15,paddingTop: 15,flex: 1, justifyContent:'center', alignItems:'center'}} onPress={this.resendOtp}>
+                                    <Text style={{fontWeight:'bold',color:'#800080',textDecorationLine: 'underline'}}>
+                                        Resend OTP
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                    }
                 </View>
                 <View style={{alignItems: 'center'}}>
                     <TouchableOpacity style={styles.buttonStyle} onPress={this.otpSubmit}>
