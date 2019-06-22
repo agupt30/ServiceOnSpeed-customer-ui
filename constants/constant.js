@@ -3674,7 +3674,7 @@ export const dataList = [
 	]
 	
 	export const getPushNotificationData = (statusValue,bookingData) => {
-		let token = "ExponentPushToken[mD3UP8G5xZrw5Spm9LKnHN]", title, body, data = {"bookingStatusFlag": true}
+		let token = bookingData.token, title, body, data = {"bookingStatusFlag": true}
 		
 		if(statusValue === 0) {
 			title = 'Booking Confirmed',

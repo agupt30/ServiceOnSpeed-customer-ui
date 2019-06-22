@@ -6,7 +6,7 @@ menu size 25
 
 AppWrapper.js 
 drawerLabel: 'Home  ',"home"
-' Login / SingUp   ',  <Icon name="user-circle"
+' Login / SignUp   ',  <Icon name="user-circle"
 'My Booking  ',<Icon name="booking"
 'Know Services     ',Icon name="know service"
 'Offers  ',Icon name="offers" 

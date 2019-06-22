@@ -63,7 +63,7 @@ export default class StatusBar extends Component {
                 counter: notification.data.bookingStatusValue
             });
         }
-        
+    
     }
 
     // To get the Status of the Current Booking

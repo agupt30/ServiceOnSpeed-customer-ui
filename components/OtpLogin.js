@@ -54,7 +54,8 @@ class OtpLogin extends React.Component {
             }
         }
     }).catch(error => {
-        alert("Something Went Wrong");
+        alert("Please Login Again");
+        this.props.navigation.navigate('PhoneNumberScreen');
     }) 
   }
   componentDidUpdate(nextProps){
@@ -98,7 +99,7 @@ class OtpLogin extends React.Component {
         }).catch(error => {
             alert("Something Went Wrong");
         })
-        // alert(JSON.stringify(tokens ))
+
       }
 
     render(){
