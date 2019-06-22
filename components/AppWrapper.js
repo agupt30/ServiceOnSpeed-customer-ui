@@ -78,7 +78,7 @@ const customDrawerContentComponent=(props)=>{
       if(token) {
         props.navigation.navigate("ProfileSectionScreen");
       }else{
-        props.navigation.navigate("PhoneNumberScreen");
+        props.navigation.navigate("Login");
       }
       props.navigation.closeDrawer();
     })

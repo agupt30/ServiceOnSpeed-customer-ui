@@ -28,7 +28,7 @@ class SelectVehicle extends React.Component {
   _handleDatePicked = (date) => {
    this.props.dateSelectedAction(date);
     this._hideDateTimePicker();
-    this.props.navigation.navigate('ServiceBookScreen');
+    this.props.navigation.navigate('ServiceBookScreen',{customerToken : ""});
   };
 
   static navigationOptions = ({ navigation }) => ({

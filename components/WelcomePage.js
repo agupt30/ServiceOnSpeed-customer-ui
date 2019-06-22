@@ -95,6 +95,7 @@ class WelcomePage extends React.Component {
                     ["type"+latestIndex] : false
                 });
             }
+            this.props.carServiceSelectedAction([]);
         }
     }
 

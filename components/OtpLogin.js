@@ -18,7 +18,7 @@ class OtpLogin extends React.Component {
         super(props);
         this.state = {
             otp:'',
-            phone: this.props.navigation.state.params.phone,
+            phone: props.navigation.state.params.phone,
             customerToken:'',
             customerExpoToken : null
         };
@@ -48,14 +48,14 @@ class OtpLogin extends React.Component {
             AsyncStorage.setItem("customerPhone", res.data.phone);
             this.props.loginCheckAction(true);
             if(this.props.CarServiceSelected.selectedServices.length) {
-                this.props.navigation.navigate('ServiceBookScreen');
+                this.props.navigation.navigate('ServiceBookScreen',{customerToken:res.data.token});
             } else {
                 this.props.navigation.navigate('WelcomePageScreen');
             }
         }
     }).catch(error => {
-        alert("Please Login Again");
-        this.props.navigation.navigate('PhoneNumberScreen');
+        alert("Something Went Wrong");
+        // this.props.navigation.navigate('PhoneNumberScreen');
     }) 
   }
   componentDidUpdate(nextProps){
