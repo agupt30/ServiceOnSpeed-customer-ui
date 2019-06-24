@@ -29,8 +29,8 @@ class ServiceBook extends React.Component {
 			},
 			merchantList:[],
 			loader: false,
-			customerToken:'',
-			expoToken : this.props.MerchantInfo.MerchantInformation[5]
+			customerToken:"",
+			expoToken : props.MerchantInfo.MerchantInformation[5]
 	  	}
 	}
 
@@ -80,13 +80,18 @@ class ServiceBook extends React.Component {
 		}
 		sendPushNotification(notificationObject);
 	}
-	componentWillReceiveProps(){
-		this.setState({
-			loader: false
-		},() => {
-			this.partnerListFetch();
-		})
-		
+	componentDidUpdate(nextProps){
+        if(this.props.LoginCheck.flagValue !== nextProps.LoginCheck.flagValue) {
+			AsyncStorage.getItem("customerToken").then((token)=>{
+				if(token) {
+				 this.setState({
+					customerToken : token
+				 },()=>{
+					this.partnerListFetch();
+				 })
+				}
+			  })
+		}
     }
    componentWillMount(){
 	AsyncStorage.getItem("customerToken").then((token)=>{
@@ -123,6 +128,11 @@ class ServiceBook extends React.Component {
 			})
 		})
 	}
+
+	onPressLogin = () => {
+		this.props.navigation.navigate('PhoneNumberScreen');
+	}
+
   	static navigationOptions = ({ navigation }) => ({
     	headerTintColor: '#fff',
     	headerStyle: {
@@ -139,7 +149,6 @@ class ServiceBook extends React.Component {
 			                    fontSize: 20,
 			                    color: '#ffffff',
 			                    fontWeight: 'bold',
-			                   
 			                    justifyContent: 'center',
 			                    alignItems: 'center',
 			            }}>Service Centers Near You  </Text>
@@ -179,12 +188,12 @@ class ServiceBook extends React.Component {
 	merchantSelect=(data)=>{
 		let merchantInfoArray=[data.name,data.address,data.id,data.partnerId,data.isPickupAvailable,data.pushToken];
 		this.props.merchantInfoAction(merchantInfoArray)
-		if(!this.props.LoginCheck.flagValue){
-			alert("Please login first")
-			this.props.navigation.navigate('PhoneNumberScreen')
-		} else {
+		// if(!this.props.LoginCheck.flagValue){
+		// 	alert("Please login first")
+		// 	this.props.navigation.navigate('PhoneNumberScreen')
+		// } else {
 		 	this.setModalVisible(true);
-		}
+		// }
 	 }
   	render() {
     	return (
@@ -454,7 +463,36 @@ class ServiceBook extends React.Component {
 							</ScrollView>
 			  			</Modal>
 						 {
-							!this.state.loader? ( <View style={{marginTop:200}}><ActivityIndicator/></View>):
+							!this.state.loader? this.props.LoginCheck.flagValue ?
+							( <View style={{marginTop:200}}><ActivityIndicator/></View>):(
+								<View style={{height: 500,flex:1,alignItems: "center",justifyContent:"center"}}>
+
+									<TouchableOpacity
+									onPress={this.onPressLogin
+									}>
+									<View
+										style={{
+										padding: 15,
+										marginBottom:10,
+										alignItems: 'center',
+										borderRadius: 5,
+										backgroundColor: '#015b63',
+										}}>
+										<Text
+										style={{
+											backgroundColor: 'transparent',
+											fontSize: 15,
+											color: '#fff',
+											width: 200,
+											height: 20,
+											textAlign: 'center',
+										}}>
+										Please Login first
+										</Text>
+									</View>
+									</TouchableOpacity>
+								</View>
+							):
 							<React.Fragment>
 								{
 							 this.state.merchantList.length==0?(<View style={{marginTop:200,alignItems:"center"}}><Text>No merchants found</Text></View>):this.state.merchantList.map((data,index)=>{
