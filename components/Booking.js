@@ -24,7 +24,8 @@ class Booking extends Component {
       showLoader: true,
       listBookings:[],
       customerToken:null,
-      currentBookingData: {}
+      currentBookingData: {},
+      animating: true
     }
     
   }
@@ -52,7 +53,6 @@ class Booking extends Component {
     ),
 
     headerTitle: (
-      
         <View style={{justifyContent: 'center',
           alignItems: 'center',}}>
           <Text
@@ -95,6 +95,8 @@ componentWillMount() {
   }) 
 }
 
+
+
 // To get the details of the Previous Bookings 
 getDataPreviousBooking(customerToken){
   const URL = 'https://dev.driveza.space/v1/users/bookings?token=' + customerToken;
@@ -108,10 +110,18 @@ getDataPreviousBooking(customerToken){
           })
         });    
     }).catch((response) => {
-        alert('In Catch' + (response))
+        // alert("Something Went Wrong")
+        this.setAnimatingToFalse();
         console.log(response)
         });
 }
+
+setAnimatingToFalse = () => {
+  this.setState({
+    animating: false 
+  })
+}
+
   render() {
     if(!this.state.showLoader) {
       return (
@@ -193,7 +203,12 @@ getDataPreviousBooking(customerToken){
         </React.Fragment>
         );
     } else {
-      return (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator size="large" color="#015b63" /></View>)
+      return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator animating = {this.state.animating} size="large" color="#015b63" />
+      {!this.state.animating?<Text>No Bookings Present</Text>:null}
+      </View>
+      )
   }
   }
 }

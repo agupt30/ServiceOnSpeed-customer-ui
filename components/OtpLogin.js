@@ -41,6 +41,7 @@ class OtpLogin extends React.Component {
     }
 
     axios.post('https://dev.driveza.space/v1/users/verify',verifyOTP).then(res => {
+        alert(JSON.stringify(res))
         if(res.data.isNew) {
             this.props.navigation.navigate('RegistrationPageScreen',{phone:this.props.navigation.state.params.phone});
         } else {
@@ -148,6 +149,14 @@ class OtpLogin extends React.Component {
         })
       }
 
+    validateOTP = (value) => {
+        const regex = /^([0-9]{0,6})$/g;
+        if(!regex.test(value)) {
+            return;
+        }
+        this.setState({otp:value});
+    }
+
     render(){
         return(
             <ScrollView keyboardShouldPersistTaps='always' style={{backgroundColor:"#ffffff", paddingTop: 20}}>
@@ -158,7 +167,8 @@ class OtpLogin extends React.Component {
                         keyboardType="numeric"
                         value={this.state.otp}
                         placeholder="Enter OTP"
-                        onChangeText={(otp) => this.setState({otp})}
+                        maxLength={6}
+                        onChangeText={(otp) => this.validateOTP(otp)}
                         underlineColorAndroid="transparent"
                     />
                 </View>

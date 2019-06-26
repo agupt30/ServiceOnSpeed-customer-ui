@@ -15,7 +15,7 @@ import { resetSelection } from '../actions/index';
         }
     }
     static navigationOptions = ({ navigation }) => ({
-      headerTitle: "My PProfile",
+      headerTitle: "My Profile",
       headerTintColor: '#fff',
       headerStyle: {
         backgroundColor: '#015b63',

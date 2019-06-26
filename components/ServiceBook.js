@@ -353,10 +353,10 @@ class ServiceBook extends React.Component {
 </View>
 </View>
 					    {
-							this.props.CarServiceSelected.selectedServices.map((index,id) =>{
+							this.props.CarServiceSelected.selectedServices.map((item,index) =>{
 								return(
-									<View style={{padding:20,flexDirection:"row"}} key={id}>
-										<View style={{alignItems:"flex-start",width:"70%"}}><Text>{dataList[index-1].name}</Text></View>
+									<View style={{padding:20,flexDirection:"row"}} key={index}>
+										<View style={{alignItems:"flex-start",width:"70%"}}><Text>{dataList[item-1].name}</Text></View>
 										<View style={{alignItems:"flex-end",width:"30%"}}>
 											<Icon
 												size={15}
@@ -498,7 +498,7 @@ class ServiceBook extends React.Component {
 							 this.state.merchantList.length==0?(<View style={{marginTop:200,alignItems:"center"}}><Text>No merchants found</Text></View>):this.state.merchantList.map((data,index)=>{
 								  return(  		  
 					<TouchableOpacity onPress={() => this.merchantSelect(data)} key={index}>
-			  			<View style={{backgroundColor:"#efefef",width:"100%",paddingLeft:20,paddingTop:20,paddingRight:20,paddingBottom:20}}>
+			  			<View key={index} style={{backgroundColor:"#efefef",width:"100%",paddingLeft:20,paddingTop:20,paddingRight:20,paddingBottom:20}}>
 							<View style={{backgroundColor:"#ffffff",borderRadius:8}}>
 							<View style={{flexDirection: "row",marginTop:10}}>
 							<View style={{alignItems:"flex-start",width:"50%",paddingLeft:10}}>

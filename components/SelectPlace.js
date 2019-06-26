@@ -116,10 +116,10 @@ const API_KEY = 'AIzaSyAaKNdcx_twduM4Ag3ZCZDHotJQhCKA-QI';
         <View style={{width:"100%"}}>
          {
            this.state.places.length > 0 ? 
-          this.state.places.map((item) => {
+          this.state.places.map((item,index) => {
             return(
-              <TouchableOpacity onPress={() => this.placeDetails(item)} style={{flexDirection: 'row', borderBottomWidth:2, borderBottomColor:"#dcdcdc", paddingBottom: 5}}>
-          <View style={{paddingTop: 10,paddingRight: 15, paddingLeft:15,marginTop:10,marginBottom:10}}>
+              <TouchableOpacity onPress={() => this.placeDetails(item)} style={{flexDirection: 'row', borderBottomWidth:2, borderBottomColor:"#dcdcdc", paddingBottom: 5}} key = {index}>
+          <View key = {index} style={{paddingTop: 10,paddingRight: 15, paddingLeft:15,marginTop:10,marginBottom:10}}>
                 <Icon  name="location" color="#d8d8d8" size={15}/>
               </View>
               <View>
@@ -128,7 +128,7 @@ const API_KEY = 'AIzaSyAaKNdcx_twduM4Ag3ZCZDHotJQhCKA-QI';
               </View>
         </TouchableOpacity>
             )
-          }) : <Text>Location not found</Text>
+          }) : null
          }
          </View>
       </ScrollView>
