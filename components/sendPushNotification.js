@@ -16,11 +16,7 @@ const sendPushNotification = ({token,title,body,data}) => {
         "data": data
       }
     }).then((res) => {
-      alert(JSON.stringify(console.log(res)))
-      console.log(res)
     }).catch((error) => {
-      console.log(error)
-      alert(JSON.stringify(console.log(error)))
     })
 }
 

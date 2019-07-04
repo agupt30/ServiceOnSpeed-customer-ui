@@ -172,7 +172,11 @@ transactionStatusCheck = () => {
 // Payment Checkout
 checkout = () => {
   // alert(this.state.bookingId);
-  this.getOrderId();
+  // this.getOrderId();
+  const payAsCash = this.props.navigation.getParam('updateByCash');
+  payAsCash();
+  this.props.navigation.goBack(null);
+  ///
 } 
 
 // To get the Order ID for the Transaction

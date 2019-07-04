@@ -247,7 +247,7 @@ export default AuthNavigator = createStackNavigator({
         })
     },
     FitmentScreen : {
-        screen : Fitment,
+    screen : Fitment,
         navigationOptions : () => ({
             headerTitle: (
                 <View style={{ justifyContent: 'center' }}>
@@ -267,5 +267,5 @@ export default AuthNavigator = createStackNavigator({
             },
             headerTintColor: "#fff"
         })
-    }
+    }           
 });

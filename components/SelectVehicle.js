@@ -6,10 +6,11 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import Icon from '../components/CustomIcon'; // Version can be specified in package.json
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import {cars} from '../constants/constant.js'
+import axios from 'axios';
 
 
 class SelectVehicle extends React.Component {
@@ -17,8 +18,11 @@ class SelectVehicle extends React.Component {
     super(props);
     this.state = {
         text:"",
-        List1: cars,
+        showLoader: true,
+        List1: [],
+        textValue:'',
         isDateTimePickerVisible: false,
+        // initialSearchList =
     };
   }
    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -51,63 +55,108 @@ class SelectVehicle extends React.Component {
       backgroundColor: '#015b63',
     },
   });
-  filteration=(text)=>{
-    const newData = cars.filter(function(item){
-         const itemData = item.name.toUpperCase()
-         const textData = text.toUpperCase()
-         return itemData.indexOf(textData) > -1
-     })
-     this.setState({
-         List1: newData,
-         text: text
-     })
+
+  filteredDataForVehicles=(text)=>{
+    this.setState({
+      text
+    }, () => {
+      let textData = this.state.text
+      if(!textData){
+        textData = "a"
+      }
+    const URL = "https://dev.driveza.space/v1/vehicles/suggestions?key=" + textData;
+    axios.get(URL)
+    .then(response => {
+      let places = response.data.list;
+        this.setState({
+          List1 : places,
+        }); 
+    })
+    .catch(error => {
+      alert(JSON.stringify(error.status));
+    })
+    })
+    
   }
+
   onPressVehicle =(index)=>{
     this.props.vehicleTypeSelectedAction(index);
     this._showDateTimePicker();
   }
+  componentWillMount(){
+    this.getVehicleList();
+  }
+
+  // Function to get the List of Vehicles
+  getVehicleList = () => {
+    const URL = "https://dev.driveza.space/v1/vehicles/suggestions?key=a";
+    axios.get(URL)
+    .then(response => {
+      let places = response.data.list;
+        this.setState({
+          List1 : places
+        }, () => {
+          this.setState({
+            showLoader:false
+          })
+        }); 
+    })
+    .catch(error => {
+      alert(JSON.stringify(error.status));
+    })
+  }
+
+
   render() {
-    return (
-      <React.Fragment>
-          <View style={styles.inputWrapper}>
-          <Icon style={styles.inputIcon} name="search" color="#dcdcdc" size={22}/>
-          <TextInput
-              style={styles.input}
-              value={this.state.text}
-              placeholder="Select Your vehicle"
-              onChangeText={(text)=>this.filteration(text)}
-             underlineColorAndroid="transparent"
-            />
-           </View>
-          <ScrollView style={{backgroundColor:'#efefef'}}>
-            {this.state.List1.map((data,index) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row',
-                    backgroundColor: '#ffffff',
-                    marginBottom: 2,
-                    paddingLeft:10,
-                    //paddingBottom:10,
-                    paddingTop:10
-                  }} onPress={() => this.onPressVehicle(data.id)} key={index}>
-                  <View>{data.Type==="T"?<Icon style={styles.inputIcon} name="bike" color="#000000" size={15}/>:<Icon style={styles.inputIcon} name="car" color="#000000" size={15}/>}</View>
-                  <View style={{marginTop:12}}><Text style={{fontSize:15}}>{data.name}
-                  </Text></View>
-                </TouchableOpacity>
-                
-              );
-            })}
-            <DateTimePicker
-          isVisible={this.state.isDateTimePickerVisible}
-          onConfirm={this._handleDatePicked}
-          onCancel={this._hideDateTimePicker}
-          mode="datetime"
-        />
-          </ScrollView>
-          
-      </React.Fragment>
-    );
+    if(!this.state.showLoader){
+      return (
+        <React.Fragment>
+            <View style={styles.inputWrapper}>
+            <Icon style={styles.inputIcon} name="search" color="#dcdcdc" size={22}/>
+            <TextInput
+                style={styles.input}
+                value={this.state.text}
+                placeholder="Select Your vehicle"
+                onChangeText={(text)=>this.filteredDataForVehicles(text)}
+               underlineColorAndroid="transparent"
+              />
+             </View>
+            <ScrollView style={{backgroundColor:'#efefef'}}>
+              {this.state.List1.map((data,index) => {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      backgroundColor: '#ffffff',
+                      marginBottom: 2,
+                      paddingLeft:10,
+                      //paddingBottom:10,
+                      paddingTop:10
+                    }} onPress={() => this.onPressVehicle(data)} key={index}>
+                    <View>{data.Type==="T"?<Icon style={styles.inputIcon} name="bike" color="#000000" size={15}/>:<Icon style={styles.inputIcon} name="car" color="#000000" size={15}/>}</View>
+                    <View style={{marginTop:12}}><Text style={{fontSize:15}}>{data.name}
+                    </Text></View>
+                  </TouchableOpacity>
+                  
+                );
+              })}
+              <DateTimePicker
+            isVisible={this.state.isDateTimePickerVisible}
+            onConfirm={this._handleDatePicked}
+            onCancel={this._hideDateTimePicker}
+            mode="datetime"
+          />
+            </ScrollView>
+            
+        </React.Fragment>
+      );
+    } else {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#015b63" />
+        </View>
+        )
+    }
   }
 }
 const styles = StyleSheet.create({

@@ -89,10 +89,12 @@ class RegistrationPage extends React.Component {
             AsyncStorage.setItem("customerName", res.data.name);
             AsyncStorage.setItem("customerEmail", res.data.email);
             AsyncStorage.setItem("customerPhone", res.data.phone);
-            this.props.loginCheckAction(true);
-            if(this.props.CarServiceSelected.selectedServices.length) { 
+            // this.props.loginCheckAction(true);
+            if(this.props.CarServiceSelected.selectedServices.length) {
+                this.props.navigation.popToTop();
                 this.props.navigation.navigate('ServiceBookScreen');
             } else {
+                this.props.navigation.popToTop();
                 this.props.navigation.navigate('WelcomePageScreen');
             }
         }).catch(error => {

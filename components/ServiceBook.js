@@ -48,7 +48,7 @@ class ServiceBook extends React.Component {
 			serviceId : this.props.CarServiceSelected.selectedServices,
 			shopId : this.props.MerchantInfo.MerchantInformation[2],
 			partnerId : this.props.MerchantInfo.MerchantInformation[3],
-			vehicle : this.props.VehicleSelected.selectedVehicle,
+			vehicle : this.props.VehicleSelected.selectedVehicle.id,
 			lat : `${this.props.LocationSelected.latitude}`,
 			long : `${this.props.LocationSelected.longitude}`,
 			time : `${this.dateFormat()}`,
@@ -57,7 +57,7 @@ class ServiceBook extends React.Component {
 		}
 
 		axios.post('http://dev.driveza.space/v1/users/create-booking',bookingData).then(res => {
-			alert(JSON.stringify(res));
+			// alert(JSON.stringify(res));
 			this.callFunction(this.props.MerchantInfo.MerchantInformation[5]);
 			this.setModalVisible(false);
 			this.props.navigation.navigate("NewStatusBarScreen",{
@@ -66,7 +66,7 @@ class ServiceBook extends React.Component {
 				singleComponentFlag : true
 			});
 		}).catch(error => {
-			alert("Something Went Wrong");
+			// alert("Something Went Wrong");
 		}) 
 	}
 	callFunction = (token) => {
@@ -118,11 +118,11 @@ class ServiceBook extends React.Component {
 				merchantList: res.data,
 				loader: true
 			},()=>{
-				alert(JSON.stringify(this.state.merchantList))
+				// alert(JSON.stringify(this.state.merchantList))
 				console.log(JSON.stringify(this.state.merchantList))
 			})
 		}).catch(error => {
-			alert("Something went wrong");
+			// alert("Something went wrong");
 			this.setState({
 				loader: true
 			})
@@ -294,7 +294,7 @@ class ServiceBook extends React.Component {
 				   				/>
 					<View style={{paddingLeft:10}}><Text style={{fontSize:15,color:"green"}}>VEHICLE CHOSEN</Text></View>        
 							</View>
-							<View style={{padding:10,paddingLeft:26}}><Text style={{fontSize:15,color:"#000000"}}> {cars[parseInt(this.props.VehicleSelected.selectedVehicle)-1].name}</Text></View>        
+							<View style={{padding:10,paddingLeft:26}}><Text style={{fontSize:15,color:"#000000"}}> {this.props.VehicleSelected.selectedVehicle.name}</Text></View>        
 
 			      
 						</View>

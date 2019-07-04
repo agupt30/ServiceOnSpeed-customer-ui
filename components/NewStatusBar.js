@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet,ScrollView,Text,View,TouchableOpacity,Animated,AsyncStorage,Alert,ActivityIndicator} from 'react-native'
+import { Keyboard,UIManager,StyleSheet,Dimensions,ScrollView,Text,View,TouchableOpacity,Animated,AsyncStorage,Alert,ActivityIndicator, TextInput} from 'react-native'
 import Icon from './CustomIcon';
 import { Notifications } from 'expo';
 import axios from 'axios';
@@ -7,6 +7,8 @@ import sendPushNotification from './sendPushNotification';
 import {getPushNotificationData} from '../constants/constant';
 
 const scrollViewLeftRight = 20, tickImageSize = 40, sectionHeight = 160, verticleLineWidth = 6, tickImageBox = tickImageSize+20, verticleLineLeft = (tickImageBox - verticleLineWidth)/2, heightTopHide = (sectionHeight - tickImageSize)/2,heightTopLeft = verticleLineLeft;
+
+const { State: TextInputState } = TextInput;
 export default class StatusBar extends Component {
     constructor(props) {
         super(props);
@@ -16,6 +18,9 @@ export default class StatusBar extends Component {
             bookingId: props.navigation.getParam('bookingId'),
             expoToken: props.navigation.getParam('expoToken'),
             showLoader: true,
+            otp : '',
+            transactionId : '',
+            shift : new Animated.Value(0)
         }
     }
 
@@ -38,8 +43,10 @@ export default class StatusBar extends Component {
     	},
     });
 
-    componentWillMount(){
-        alert(this.state.expoToken);
+    componentWillMount(){ 
+        this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow);
+        this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide);
+
         AsyncStorage.getItem("customerToken").then((token)=>{
             if(token) {
              this.setState({
@@ -51,6 +58,44 @@ export default class StatusBar extends Component {
           })
     }
 
+    componentWillUnmount() {
+        this.keyboardDidShowSub.remove();
+        this.keyboardDidHideSub.remove();
+      }
+
+      handleKeyboardDidShow = (event) => {
+        const { height: windowHeight } = Dimensions.get('window');
+        const keyboardHeight = event.endCoordinates.height;
+        const currentlyFocusedField = TextInputState.currentlyFocusedField();
+          UIManager.measure(currentlyFocusedField, (originX, originY, width, height, pageX, pageY) => {
+            const fieldHeight = height;
+            const fieldTop = pageY;
+            const gap = (windowHeight - keyboardHeight) - (fieldTop + fieldHeight)-10;
+            if (gap >= 0) {
+              return;
+          }
+        Animated.timing(
+            this.state.shift,
+            {
+              toValue: gap,
+              duration: 100,
+              useNativeDriver: true,
+            }
+          ).start();
+        });
+      }
+    
+      handleKeyboardDidHide = () => {
+        Animated.timing(
+          this.state.shift,
+          {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true,
+          }
+        ).start();
+      }  
+
     // To check for the Push Notification
     componentDidMount(){
         this._notificationSubscription = Notifications.addListener(this.recieveNotification);
@@ -58,6 +103,7 @@ export default class StatusBar extends Component {
 
         // For getting Notification
     recieveNotification = (notification) => {
+        alert(JSON.stringify(notification));
         if(notification.origin === 'received' && notification.data.bookingId === this.state.bookingId){
             this.setState({
                 counter: notification.data.bookingStatusValue
@@ -97,9 +143,13 @@ export default class StatusBar extends Component {
         });
     }
 
+    updateByCash = () => {
+        this.updateStatusPickedUp(6);
+    }
+
     // To get the Details of the Job Card
     getJobcardDetails = () =>{
-        this.props.navigation.navigate("JobCardScreen",{bookingId: this.state.bookingId, expoToken: this.state.expoToken});
+        this.props.navigation.navigate("JobCardScreen",{bookingId: this.state.bookingId, expoToken: this.state.expoToken,updateByCash:this.updateByCash});
     }  
    
     // Increament for the Counter Value
@@ -118,10 +168,36 @@ export default class StatusBar extends Component {
         })
     }
 
+    // OTP Validation Check
+    validateOTP = (value) => {
+        const regex = /^([0-9]{0,6})$/g;
+        if(!regex.test(value)) {
+            return;
+        }
+        this.setState({otp:value});
+    }
+    // To Verify the OTP from the Merchant
+    verifyOTP = () => {
+        axios.post("https://dev.driveza.space/v1/users/payment-otp",{
+            token: this.state.customerToken,
+            bookingId: this.state.bookingId,
+            otp : parseInt(this.state.otp)
+            }).then((response) => {
+            this.updateStatusPickedUp(7);
+            sendPushNotification(getPushNotificationData(7,{token : this.state.expoToken, bookingId : this.state.bookingId}))
+            this.setState({
+                transactionId : response.data.transactionId
+            })
+        }).catch((response) => {
+            alert('In Catch Enter' + (response))
+        });
+    } 
+
     render(){
+        const {shift} = this.state; 
         if(!this.state.showLoader) {
         return(
-            <ScrollView style={{paddingRight:scrollViewLeftRight,paddingLeft:scrollViewLeftRight/2}}>
+            <Animated.ScrollView keyboardShouldPersistTaps="always" style={[styles.formWrapper, { transform: [{translateY: shift}] }]} style={{paddingRight:scrollViewLeftRight,paddingLeft:scrollViewLeftRight/2}}>
                 <View style={styles.hideTopLines}></View>
                 <View style={styles.hideBottomLines}></View>
                 <View style={styles.trackerBox}>
@@ -192,7 +268,7 @@ export default class StatusBar extends Component {
                                     this.state.counter ===5?"Job card Created":null
                                 }
                                 {
-                                    this.state.counter >=6?"Payment Received":null
+                                    this.state.counter >=6?"Payment Ready":null
                                 }
                             </Text>
                         </View>
@@ -221,9 +297,34 @@ export default class StatusBar extends Component {
                             }
                             {
                                 this.state.counter >=7? 
-                                "Completed" :  null     
+                                "Booking Completed" :  null     
                             }
                         </Text>
+                        <Text>
+                            {
+                                this.state.counter>=7?
+                                `Transaction ID : ${this.state.transactionId}` : null
+                            }
+                        </Text>
+                        {
+                                this.state.counter === 6 ?
+                                <View style={{flexDirection:'row'}}>
+                                <TextInput
+                                style={styles.input}
+                                keyboardType="numeric"
+                                value={this.state.otp}
+                                placeholder="Enter OTP"
+                                maxLength={5}
+                                onChangeText={(otp) => this.validateOTP(otp)}
+                                />
+                                <TouchableOpacity style = {{backgroundColor: '#158590',  padding: 5 , borderRadius: 2, marginLeft:10}} onPress={() => this.verifyOTP()}>
+                                <Text style = {{color: '#FFF'}}>
+                                Verify
+                                </Text>
+                                </TouchableOpacity>
+                            </View> : null
+                            }
+                                
                         </View>
                     </View>
                 </View>
@@ -296,7 +397,8 @@ export default class StatusBar extends Component {
                         </Text>
                     </TouchableOpacity> */}
                     {/* </View> */}
-            </ScrollView>
+                    <View style ={{width:'100%', height: 500}}></View>
+            </Animated.ScrollView>
             )
         } else {
             return (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><ActivityIndicator size="large" color="#015b63" /></View>)
@@ -370,5 +472,14 @@ const styles = StyleSheet.create({
     textContent : {
         fontSize : 16, 
         fontWeight : "bold"
+    },
+    input : {
+        width : 100,
+        borderBottomWidth: 1,
+        borderColor: "#158590",
+        borderRadius: 3,
+    },
+    formWrapper : {
+        width: '100%'
     }
 });

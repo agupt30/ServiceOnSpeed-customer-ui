@@ -29,6 +29,7 @@ class OtpLogin extends React.Component {
 
     componentDidMount(){
         this.startTimer();
+        this.generatePushToken();
     }
 
     otpSubmit=() => {
@@ -40,30 +41,29 @@ class OtpLogin extends React.Component {
     otp : parseInt(this.state.otp)
     }
 
+    // console.log(verifyOTP);
+
     axios.post('https://dev.driveza.space/v1/users/verify',verifyOTP).then(res => {
         alert(JSON.stringify(res))
         if(res.data.isNew) {
             this.props.navigation.navigate('RegistrationPageScreen',{phone:this.props.navigation.state.params.phone});
         } else {
-            this.setState({
-                customerToken: res.data.token
-            },()=>{
-                this.generatePushToken()
-            })
+            this.updateExpoPushToken(res.data.token);
             AsyncStorage.setItem("customerToken", res.data.token);
             AsyncStorage.setItem("customerName", res.data.name);
             AsyncStorage.setItem("customerEmail", res.data.email);
             AsyncStorage.setItem("customerPhone", res.data.phone);
             this.props.loginCheckAction(true);
             if(this.props.CarServiceSelected.selectedServices.length) {
+                this.props.navigation.popToTop();
                 this.props.navigation.navigate('ServiceBookScreen',{customerToken:res.data.token});
             } else {
+                this.props.navigation.popToTop();
                 this.props.navigation.navigate('WelcomePageScreen');
             }
         }
     }).catch(error => {
         alert("Something Went Wrong");
-        // this.props.navigation.navigate('PhoneNumberScreen');
     }) 
   }
   componentDidUpdate(nextProps){
@@ -92,12 +92,12 @@ class OtpLogin extends React.Component {
         this.setState({
             customerExpoToken : await Notifications.getExpoPushTokenAsync()
         }, () => {
-            this.updateExpoPushToken();      
+            alert(this.state.customerExpoToken);      
         })
       }
 
     startTimer = () => {
-        let timer = 60*2, minutes, seconds; // 2 in minutes
+        let timer = 10, minutes, seconds; // 2 in minutes
         this.otpTimer = setInterval( () => {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
@@ -119,18 +119,23 @@ class OtpLogin extends React.Component {
         }, 1000);
     }
 
-      // To Generate the Data for the Customer Expo Push Tokken
-      updateExpoPushToken = () => {
+    //   To Generate the Data for the Customer Expo Push Tokken
+      updateExpoPushToken = (customerToken) => {
         const tokens = {
-            token : this.state.customerToken,
+            token : customerToken,
             pushToken: this.state.customerExpoToken
             }
+            console.log(tokens);
         axios.post('https://dev.driveza.space/v1/users/update-push-token',tokens).then(res => {
-           console.log(tokens.pushToken)
+           console.log("success");
         }).catch(error => {
             alert("Something Went Wrong");
         })
 
+      }
+
+      componentWillUnmount(){
+        clearInterval(this.otpTimer);
       }
 
       resendOtp = () => {
@@ -149,6 +154,7 @@ class OtpLogin extends React.Component {
         })
       }
 
+    // Regex for OTP Validation
     validateOTP = (value) => {
         const regex = /^([0-9]{0,6})$/g;
         if(!regex.test(value)) {

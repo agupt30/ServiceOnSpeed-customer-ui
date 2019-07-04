@@ -1,5 +1,5 @@
 const initialState = {
-    selectedVehicle:[]
+    selectedVehicle:{}
 }
 
 export default function VehicleSelected(state=initialState, action) {

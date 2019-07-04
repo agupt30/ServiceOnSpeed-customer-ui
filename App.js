@@ -14,7 +14,8 @@ import AppWrapper from './components/AppWrapper';
 //Fonts Loading
 import { Font } from 'expo';
 import OpenSans from './fonts/OpenSans-Regular.ttf';
-import OpenSansSemiBold from './node_modules/@expo/vector-icons/fonts/OpenSans-Semibold.ttf';
+// import OpenSansSemiBold from './fonts/OpenSans-Semibold.ttf';    
+import OpenSansSemiBold from './fonts/OpenSans-SemiBold.ttf';       
 import OpenSansItalic from './fonts/OpenSans-Italic.ttf';
 import fontello from './fonts/fontello/fontello.ttf';
 
