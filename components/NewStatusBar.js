@@ -314,7 +314,7 @@ export default class StatusBar extends Component {
                                 keyboardType="numeric"
                                 value={this.state.otp}
                                 placeholder="Enter OTP"
-                                maxLength={5}
+                                maxLength={6}
                                 onChangeText={(otp) => this.validateOTP(otp)}
                                 />
                                 <TouchableOpacity style = {{backgroundColor: '#158590',  padding: 5 , borderRadius: 2, marginLeft:10}} onPress={() => this.verifyOTP()}>

@@ -8,7 +8,7 @@ import {getPushNotificationData} from '../constants/constant';
 
 const linesHeight = 100;
 export default class StatusBar extends Component {
-    constructor(props) {
+    constructor(props) {  
         super(props);
         this.state={
             counter:0,

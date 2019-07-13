@@ -238,12 +238,12 @@ export default AuthNavigator = createStackNavigator({
                         }}>
                         Login
                     </Text>
-                </View>
+                </View>  
             ),
             headerStyle: {
                 backgroundColor: '#015b63',
             },
-            headerTintColor: "#fff"
+            headerTintColor: "#fff" 
         })
     },
     FitmentScreen : {

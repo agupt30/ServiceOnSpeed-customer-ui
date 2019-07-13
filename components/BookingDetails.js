@@ -3,7 +3,15 @@ import {View,Text,TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from '../components/CustomIcon';
 export default BookingDetails = (props) => (
     <React.Fragment>
-    <View style={{marginTop: 20,paddingLeft:10}}><Text style={{fontSize:17, fontWeight:"bold"}}>Booking Id : {props.currentBookingData.bookingId}</Text></View>
+    <View style={{marginTop: 20,paddingLeft:10}}>
+    <Text style={{fontSize:17, fontWeight:"bold"}}>Booking Id : {props.currentBookingData.bookingId}</Text>
+    <View style = {{flexDirection : "row"}}>
+        <Text style={{fontSize:17, fontWeight:"bold"}}> Booking Status : </Text>
+        <Text style={{color:props.currentBookingData.bookingStatus === 7? 'green' : 'red'}}>
+        {props.currentBookingData.bookingStatus === 7 ? 'COMPLETED' : 'CANCELLED '}
+        </Text>
+    </View>
+    </View>
     <View style={{borderBottomWidth:2,borderColor:"#dcdcdc",marginTop:15}}></View>
     <View style={{backgroundColor:"#ffffff",width:"100%",marginTop:20}}>
                 <View style={{flexDirection:"row",marginTop:10}}>
@@ -37,50 +45,52 @@ export default BookingDetails = (props) => (
                     </View>
                 </View>
             </View>
-
- <View style={{borderBottomWidth:2,borderColor:"#dcdcdc",marginTop:5}}></View>
- <View style={{marginTop: 20,paddingLeft:10}}><Text style={{fontSize:17,fontWeight:"bold"}}>BILL DETAILS</Text></View>
-  <View style={{padding:10,flexDirection:"row"}}>
-  <View style={{alignItems:"flex-start",width:"50%"}}><Text>Services Amount</Text></View>
-  <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
-  <Icon
-                            size={12}
-                            name="rupee"
-                            color="#000000"
-                        />
-    <Text> {props.currentBookingData.total}</Text>
-  </View>
- </View>
-  <View style={{padding:10,flexDirection:"row"}}>
-  <View style={{alignItems:"flex-start",width:"50%"}}><Text>Pickup Amount</Text></View>
-  <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
-  <Icon
-                            size={12}
-                            name="rupee"
-                            color="#000000"
-                        />
-    <Text>Rs</Text>
-  </View>
- </View>
-  <View style={{padding:10,flexDirection:"row"}}>
-  <View style={{alignItems:"flex-start",width:"50%"}}><Text style={{fontWeight:"bold"}}>Total Amount</Text></View>
-  <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
-  <Icon
-                            size={12}
-                            name="rupee"
-                            color="#000000"
-                        />
-    <Text>Rs</Text>
-  </View>
- </View>
- <View style={{borderBottomWidth:2,borderColor:"#dcdcdc",marginTop:5}}></View>
- <View style={{marginTop: 20,paddingLeft:10}}><Text style={{fontSize:17,fontWeight:"bold"}}>PAYMENTS</Text></View>
- <View style={{padding:10,flexDirection:"row"}}>
-  <View style={{alignItems:"flex-start",width:"50%"}}><Text style={{fontWeight:"bold"}}>Payment By</Text></View>
-  <View style={{alignItems:"center",width:"50%"}}>
-    <Text style={{fontWeight:"bold"}}>CASH</Text>
-  </View>
- </View>
+{props.currentBookingData.bookingStatus === 7 ? <View>
+    <View style={{borderBottomWidth:2,borderColor:"#dcdcdc",marginTop:5}}></View>
+    <View style={{marginTop: 20,paddingLeft:10}}><Text style={{fontSize:17,fontWeight:"bold"}}>BILL DETAILS</Text></View>
+    <View style={{padding:10,flexDirection:"row"}}>
+    <View style={{alignItems:"flex-start",width:"50%"}}><Text>Services Amount</Text></View>
+    <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
+    <Icon
+                                size={12}
+                                name="rupee"
+                                color="#000000"
+                            />
+        <Text> {props.currentBookingData.total}</Text>
+    </View>
+    </View>
+    <View style={{padding:10,flexDirection:"row"}}>
+    <View style={{alignItems:"flex-start",width:"50%"}}><Text>Pickup Amount</Text></View>
+    <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
+    <Icon
+                                size={12}
+                                name="rupee"
+                                color="#000000"
+                            />
+        <Text>Rs </Text>
+    </View>
+    </View>
+    <View style={{padding:10,flexDirection:"row"}}>
+    <View style={{alignItems:"flex-start",width:"50%"}}><Text style={{fontWeight:"bold"}}>Total Amount</Text></View>
+    <View style={{alignItems:"center",width:"50%",flexDirection:"row"}}>
+    <Icon
+                                size={12}
+                                name="rupee"
+                                color="#000000"
+                            />
+        <Text> {props.currentBookingData.total}</Text>
+    </View>
+    </View>
+    <View style={{borderBottomWidth:2,borderColor:"#dcdcdc",marginTop:5}}></View>
+    <View style={{marginTop: 20,paddingLeft:10}}><Text style={{fontSize:17,fontWeight:"bold"}}>PAYMENTS</Text></View>
+    <View style={{padding:10,flexDirection:"row"}}>
+    <View style={{alignItems:"flex-start",width:"50%"}}><Text style={{fontWeight:"bold"}}>Payment By</Text></View>
+    <View style={{alignItems:"center",width:"50%"}}>
+        <Text style={{fontWeight:"bold"}}>PAID</Text>
+    </View>
+    </View>
+ </View> : null
+}
  <View style={{alignItems: 'center',marginBottom:20}}>
       <TouchableOpacity style={styles.buttonStyle} onPress={() => this.onSubmit()}>
           <Text style={styles.textStyle}>Send Invoice Through Mail</Text>

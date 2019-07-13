@@ -66,7 +66,7 @@ class ServiceBook extends React.Component {
 				singleComponentFlag : true
 			});
 		}).catch(error => {
-			// alert("Something Went Wrong");
+			// alert("Something Went Wrong"); 
 		}) 
 	}
 	callFunction = (token) => {
@@ -118,7 +118,7 @@ class ServiceBook extends React.Component {
 				merchantList: res.data,
 				loader: true
 			},()=>{
-				// alert(JSON.stringify(this.state.merchantList))
+				alert(JSON.stringify(this.state.merchantList)) 
 				console.log(JSON.stringify(this.state.merchantList))
 			})
 		}).catch(error => {
@@ -509,7 +509,7 @@ class ServiceBook extends React.Component {
 							</View>
 			   			</View>
 			   			<View style={{marginTop:10,paddingLeft:10,paddingRight:10}}>
-			   				<Text style={{fontSize:15,color:"#8d8d8d"}}>Kaspate vasti</Text>
+			   				<Text style={{fontSize:15,color:"#8d8d8d"}}>{data.address}</Text>
 			   			</View>
 			   			<View style={{flexDirection: "row",marginTop:10,paddingLeft:10}}>
 			   			<View style={{width:"80%",justifyContent:"center"}}><TouchableOpacity style={styles.buttonStyle}>

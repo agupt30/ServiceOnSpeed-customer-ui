@@ -8,12 +8,14 @@ import {
   Modal,
   Alert,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import Icon from '../components/CustomIcon';
 import axios from 'axios';
 import BookingDetails from './BookingDetails'
 import {} from '../constants/constant';
+import { Notifications } from 'expo';
 
 
 class Booking extends Component {
@@ -25,7 +27,8 @@ class Booking extends Component {
       listBookings:[],
       customerToken:null,
       currentBookingData: {},
-      animating: true
+      animating: true,
+      refreshing : false
     }
     
   }
@@ -85,6 +88,14 @@ class Booking extends Component {
     }
   }
 
+componentDidMount = () => {
+  this._notificationSubscription = Notifications.addListener(this.recieveNotification);
+}
+
+recieveNotification = () => {
+  this.getDataPreviousBooking(this.state.customerToken)
+}
+
 componentWillMount() {
   AsyncStorage.getItem("customerToken").then((token)=>{
     this.setState({
@@ -103,6 +114,7 @@ getDataPreviousBooking(customerToken){
     axios.get(URL).then((response) => {
         this.setState({
           listBookings : response.data,
+          refreshing : false 
         }, () => {
           console.log(JSON.stringify(customerToken));
           this.setState({
@@ -119,6 +131,16 @@ getDataPreviousBooking(customerToken){
 setAnimatingToFalse = () => {
   this.setState({
     animating: false 
+  })
+}
+
+// To Refresh the Component
+_onRefresh = () => {
+  let reactNativeInstance = this;
+  this.setState({
+    refreshing : true
+  }, () => {
+    this.getDataPreviousBooking(this.state.customerToken);
   })
 }
 
@@ -150,7 +172,14 @@ setAnimatingToFalse = () => {
                 <BookingDetails currentBookingData = {this.state.currentBookingData}/>
            </ScrollView>
           </Modal>
-        <ScrollView style={{backgroundColor:"#f8f8f8"}}>
+        <ScrollView 
+        refreshControl={
+          <RefreshControl
+          refreshing={this.state.refreshing}
+          onRefresh={this._onRefresh}
+          />
+        }
+        style={{backgroundColor:"#f8f8f8"}}>
           {
             this.state.listBookings.map((booking, index) => {
             return (
